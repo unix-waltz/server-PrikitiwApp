@@ -1,7 +1,7 @@
 const response = ({
     res,
-    status,
-    code,
+    status = 'success',
+    code = 200,
     data,
     message,
     token
