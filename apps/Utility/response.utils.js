@@ -14,4 +14,4 @@ const response = ({
         _token:token
     })
 }
-export default response
+export  {response}
