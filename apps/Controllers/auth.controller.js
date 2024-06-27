@@ -2,8 +2,8 @@ import {response }from "../Utility/response.utils.js"
 import _ from 'lodash'
 import bcrypt from 'bcrypt'
 import { PrismaClient } from '@prisma/client'
-import {setToken} from './../Utility/token.utils.js'
-import {setcookie} from './../Utility/cookie.utils.js'
+import {setToken,decodeToken} from './../Utility/token.utils.js'
+import {setcookie,deletecookie,getcookie} from './../Utility/cookie.utils.js'
 const prisma = new PrismaClient()
 const Controller = {
     Login :async (req,res)=>{
@@ -94,5 +94,52 @@ await prisma.user.update({where:{email:email},data:{refreshtoken:refresh_token}}
             })
           }
     },
+    Refresh : async (req,res) => {
+// get cookie
+const cookie = getcookie(req)
+// console.log(cookie)
+try {
+    // find cookie in db
+    const foundusr = await prisma.user.findFirst({where:{refreshtoken:cookie}})
+// check reuse cookie
+if(!foundusr){
+const decode = decodeToken({token:cookie,type:'refresh'})
+await prisma.user.update({where:{email:decode.email},data:{refreshtoken:''}})
+// console.log(decode)
+return response({
+    res,
+    status : 'Forbidden!',
+    code : 403,
+    message:`${error}`
+})
+}
+// new jwt
+const {access_token,refresh_token} = setToken({payload:{
+    email:foundusr.email,
+    username:foundusr.username,
+    role:foundusr.role
+}})
+// update user jwt
+await prisma.user.update({where:{email:foundusr.email},data:{refreshtoken:refresh_token}})
+// clear cookie 
+deletecookie(res)
+// set new cookie
+setcookie({res,token:refresh_token})
+// response
+return response({
+    res,
+    message:'new token',
+    token:access_token
+})
+} catch (error) {
+    return response({
+        res,
+        status : 'Internal error!',
+        code : 500,
+        message:`${error}`
+    }) 
+}
+
+    }
 }
 export default Controller
