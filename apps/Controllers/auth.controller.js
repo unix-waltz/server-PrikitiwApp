@@ -1,9 +1,10 @@
-import {response }from "../Utility/response.utils.js"
+import {response}from "../Utility/response.utils.js"
 import _ from 'lodash'
 import bcrypt from 'bcrypt'
 import { PrismaClient } from '@prisma/client'
 import {setToken,decodeToken} from './../Utility/token.utils.js'
 import {setcookie,deletecookie,getcookie} from './../Utility/cookie.utils.js'
+
 const prisma = new PrismaClient()
 const Controller = {
     Login :async (req,res)=>{
@@ -56,10 +57,28 @@ await prisma.user.update({where:{email:email},data:{refreshtoken:refresh_token}}
                 message:`${error}`
             })
         }
-
     },
-    Logout : (req,res)=>{
-        res.send('logout')
+    Logout : async (req,res)=>{
+const cookie = getcookie(req)
+try {
+    await prisma.user.update({where:{refreshtoken:cookie},data:{refreshtoken:''}})
+setcookie({res,token:''})
+deletecookie(res)
+console.log(cookie)
+
+return response({
+    res,
+    message:'logout succes!',
+    token:getcookie(req)
+})
+} catch (error) {
+    return response({
+        res,
+        status : 'Internal error!',
+        code : 500,
+        message:`${error}`
+    }) 
+}
     },
     Register : async (req,res)=>{
         const {email,password,username} = req.body
@@ -97,8 +116,9 @@ await prisma.user.update({where:{email:email},data:{refreshtoken:refresh_token}}
     Refresh : async (req,res) => {
 // get cookie
 const cookie = getcookie(req)
-// console.log(cookie)
+console.log(cookie)
 try {
+    if(_.isNil(cookie)) throw new Error('invalid cookie!')
     // find cookie in db
     const foundusr = await prisma.user.findFirst({where:{refreshtoken:cookie}})
 // check reuse cookie

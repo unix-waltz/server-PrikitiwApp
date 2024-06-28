@@ -14,7 +14,7 @@ model User {
   password     String
   username     String  @unique
   role         role    @default(USER)
-  refreshtoken String? @db.Text
+  refreshtoken String? @unique @db.VarChar(500) 
 }
 
 enum role {
