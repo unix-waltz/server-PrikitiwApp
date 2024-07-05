@@ -64,8 +64,6 @@ try {
     await prisma.user.update({where:{refreshtoken:cookie},data:{refreshtoken:''}})
 setcookie({res,token:''})
 deletecookie(res)
-console.log(cookie)
-
 return response({
     res,
     message:'logout succes!',
@@ -116,7 +114,6 @@ return response({
     Refresh : async (req,res) => {
 // get cookie
 const cookie = getcookie(req)
-console.log(cookie)
 try {
     if(_.isNil(cookie)) throw new Error('invalid cookie!')
     // find cookie in db

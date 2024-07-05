@@ -12,6 +12,7 @@ app.use(
     })
   );
 app.use(express.json())
+app.use(express.static('./public'));
 app.use(cookieParser())
 app.use('/api',routes)
 const port = process.env.APP_PORT || 4000
