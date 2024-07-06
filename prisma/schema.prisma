@@ -14,7 +14,19 @@ model User {
   password     String
   username     String  @unique
   role         role    @default(USER)
-  refreshtoken String? @unique @db.VarChar(500) 
+  refreshtoken String? @unique @db.VarChar(500)
+  Post         Post[]
+}
+
+model Post {
+  id          String   @id @default(uuid())
+  thumbnail   String?  @unique @db.VarChar(600)
+  title       String   @db.VarChar(100)
+  description String?  @db.VarChar(500)
+  created_at  DateTime @default(now())
+  category    String?
+  author      User     @relation(fields: [authorId], references: [id])
+  authorId    Int
 }
 
 enum role {
