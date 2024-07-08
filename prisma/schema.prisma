@@ -19,14 +19,14 @@ model User {
 }
 
 model Post {
-  id          String   @id @default(uuid())
-  thumbnail   String?  @unique @db.VarChar(600)
-  title       String   @db.VarChar(100)
-  description String?  @db.VarChar(500)
-  created_at  DateTime @default(now())
-  category    String?
-  author      User     @relation(fields: [authorId], references: [id])
-  authorId    Int
+  id         String   @id @default(uuid())
+  thumbnail  String?  @unique @db.VarChar(600)
+  title      String   @db.VarChar(100)
+  body       String   @db.VarChar(4000)
+  created_at DateTime @default(now())
+  category   String?
+  author     User     @relation(fields: [authorId], references: [id])
+  authorId   Int
 }
 
 enum role {

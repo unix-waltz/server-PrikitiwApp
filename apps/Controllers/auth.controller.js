@@ -35,6 +35,7 @@ const Controller = {
                     })
                     // set jwt
                     const {access_token,refresh_token} = setToken({payload:{
+                        id:emailexist.id,
                         email:emailexist.email,
                         username:emailexist.username,
                         role:emailexist.role
@@ -132,6 +133,7 @@ return response({
 }
 // new jwt
 const {access_token,refresh_token} = setToken({payload:{
+    id:foundusr.id,
     email:foundusr.email,
     username:foundusr.username,
     role:foundusr.role
