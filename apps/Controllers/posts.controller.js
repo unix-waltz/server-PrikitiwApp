@@ -5,7 +5,8 @@ const {isNil,toInteger} = _
 const prisma = new PrismaClient()
 const Controller = {
 Create : async (req,res) =>{
-    const thumbnail = req.file ? req.file.path : null
+    const thumbnail = req.file ? req.file.filename : null
+    console.log(thumbnail)
     const {title,authorId,body,category} = req.body
     if(isNil(title)||isNil(authorId)) return response({res,status:"failed!",message:"Tittle & AuthorID must be filled!",code:500})
    try {
