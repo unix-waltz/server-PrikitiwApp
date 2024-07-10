@@ -37,5 +37,25 @@ Update : async (req,res) =>{
 Delete : async (req,res) =>{
     return res.send("del")
 },
+ShowAll :async (req,res)=>{
+const authorId = toInteger(req.params.authorId)
+try {
+    const posts = await prisma.post.findMany({
+        where: { authorId: parseInt(authorId) },
+        include: { author: {select:{
+            name:true,
+            username:true
+        }} }
+    });
+    return response({res,data:posts})
+} catch (error) {
+    return response({
+        res,
+        status : 'Internal error!',
+        code : 500,
+        message:`${error}`
+    })
+}
+},
 }
 export default Controller
