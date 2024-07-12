@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import _ from 'lodash'
+import {existsSync,unlinkSync} from 'fs'
+
 import {response}from "../Utility/response.utils.js"
 const {isNil,toInteger} = _
 const prisma = new PrismaClient()
@@ -32,7 +34,40 @@ Create : async (req,res) =>{
    }
 },
 Update : async (req,res) =>{
-    return res.send("up")
+const {postId,postThumbnail,title,authorId,body,category} = req.body
+try {
+    if(isNil(title)||isNil(authorId)||isNil(postId)||isNil(body)||isNil(category)) return response({res,status:"failed!",message:"Tittle & AuthorID must be filled!",code:500})
+
+    const post = await prisma.post.findUnique({where:{id:postId}})
+    let thumbnail = postThumbnail
+    if(post.thumbnail != postThumbnail){
+        thumbnail = req.file ? req.file.filename : null
+        let oldtuhumb = `./public/posts-image/${post.thumbnail}`
+        if(existsSync(oldtuhumb)) unlinkSync(oldtuhumb)
+    }
+if(post.authorId != authorId) return response({res,code:403,message:"is forbidden!"})
+
+    const post_ = await prisma.post.update({
+        where:{id:postId},
+        data:{
+            title,
+            thumbnail,
+            body,
+            category,
+            author:{
+                connect:{id:toInteger(authorId)}
+            }
+        }
+     })
+     return response({res,data:post_})
+   } catch (error) {
+    return response({
+        res,
+        status : 'Internal error!',
+        code : 500,
+        message:`${error}`
+    })
+   }
 },
 Delete : async (req,res) =>{
     return res.send("del")
@@ -57,5 +92,27 @@ try {
     })
 }
 },
+getSinglepost: async(req,res) =>{
+const {id} = req.params
+// console.log(id)
+try {
+    const post = await prisma.post.findUnique({
+        where: { id:id },
+        include: { author: {select:{
+            name:true,
+            username:true
+        }} }
+    });
+    return response({res,data:post})
+} catch (error) {
+    return response({
+        res,
+        status : 'Internal error!',
+        code : 500,
+        message:`${error}`
+    })
+}
+},
+
 }
 export default Controller

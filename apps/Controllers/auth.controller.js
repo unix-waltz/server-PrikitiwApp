@@ -62,7 +62,7 @@ await prisma.user.update({where:{email:email},data:{refreshtoken:refresh_token}}
     Logout : async (req,res)=>{
 const cookie = getcookie(req)
 try {
-    await prisma.user.update({where:{refreshtoken:cookie},data:{refreshtoken:''}})
+    await prisma.user.update({where:{refreshtoken:cookie},data:{refreshtoken:null}})
 setcookie({res,token:''})
 deletecookie(res)
 return response({
@@ -73,7 +73,7 @@ return response({
 } catch (error) {
     return response({
         res,
-        status : 'Internal error!',
+        status : 'Internal s error!',
         code : 500,
         message:`${error}`
     }) 

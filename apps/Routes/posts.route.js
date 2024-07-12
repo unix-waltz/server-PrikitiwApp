@@ -4,6 +4,7 @@ import { Router } from "express";
 const route = Router()
 route.post('/create',upload.single('thumbnail'),Controller.Create)
 route.get('/all/myposts/:authorId',Controller.ShowAll)
+route.get('/detail/myposts/:id',Controller.getSinglepost)
 route.delete('/delete',Controller.Delete)
-route.post('/update',Controller.Update)
+route.post('/update',upload.single('postThumbnail'),Controller.Update)
 export default route
