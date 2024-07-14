@@ -70,7 +70,25 @@ if(post.authorId != authorId) return response({res,code:403,message:"is forbidde
    }
 },
 Delete : async (req,res) =>{
-    return res.send("del")
+    // console.log(req.body)
+   const {authorId,postId} = req.body
+   if(isNil(authorId)||isNil(postId)) return response({res,status:"failed!",message:"PostId & AuthorID must be filled!",code:500})
+   try {
+    const post = await prisma.post.findUnique({where:{id:postId}})
+if(post.authorId != authorId) return response({res,code:403,message:"is forbidden!"})
+
+    let oldtuhumb = `./public/posts-image/${post.thumbnail}`
+    if(existsSync(oldtuhumb)) unlinkSync(oldtuhumb)
+await prisma.post.delete({where:{id:postId}})
+return response({res,message:"success delete the post!"})
+   } catch (error) {
+    return response({
+        res,
+        status : 'Internal error!',
+        code : 500,
+        message:`${error}`
+    })
+   }
 },
 ShowAll :async (req,res)=>{
 const authorId = toInteger(req.params.authorId)
