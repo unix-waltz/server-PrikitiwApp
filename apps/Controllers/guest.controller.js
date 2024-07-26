@@ -30,7 +30,91 @@ getSinglepost: async(req,res) =>{
         return InternalError({res,error})
     }
     },
+getAuthor:async(req,res)=>{
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = 8;
+    const {author} = req.params
+    try {
+        const data = await prisma.post.findMany({where:{author: {
+            username: author
+        }},
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+            include: { author: {select:{
+                name:true,
+                username:true
+            }} }}) 
+            const totalPosts = await prisma.post.count({where:{ author: {
+                username: author
+            }}});
+        const totalPages = Math.ceil(totalPosts / pageSize);
+        return response({res,data:{
+            meta: {
+                page : page > totalPages ? false :true,
+                totalPosts,
+                totalPages,
+                currentPage: page,
+            },
+            data : data ? data :undefined
+        }})
+    } catch (error) {
+        return InternalError({res,error})
+    }
+},
+getCategory:async(req,res)=>{
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = 8;
+    const {category} = req.params
+    try {
+       const data = await prisma.post.findMany({where:{category:category},
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        include: { author: {select:{
+            name:true,
+            username:true
+        }} }}) 
+        const totalPosts = await prisma.post.count({where:{category:category}});
+        const totalPages = Math.ceil(totalPosts / pageSize);
+        return response({res,data:{
+            meta: {
+                page : page > totalPages ? false :true,
+                totalPosts,
+                totalPages,
+                currentPage: page,
+            },
+            data : data ? data :undefined
+        }})
+    } catch (error) {
+        return InternalError({res,error})
+    }
+},
 Search : () =>{},
-AllPost : () =>{}
+AllPost :async(req,res)=>{
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = 8;
+
+    try {
+       const data = await prisma.post.findMany({
+        skip: (page - 1) * pageSize,
+      take: pageSize,
+        include: { author: {select:{
+            name:true,
+            username:true
+        }} }}) 
+        const totalPosts = await prisma.post.count();
+        const totalPages = Math.ceil(totalPosts / pageSize);
+        return response({res,data:{
+            meta: {
+                page : page > totalPages ? false :true,
+                totalPosts,
+                totalPages,
+                currentPage: page,
+            },
+            data : data ? data :undefined
+        }})
+    } catch (error) {
+        return InternalError({res,error})
+    }
+},
 }
 export default Controller

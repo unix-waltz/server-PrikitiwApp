@@ -91,6 +91,7 @@ return response({res,message:"success delete the post!"})
    }
 },
 ShowAll :async (req,res)=>{
+    
 const authorId = toInteger(req.params.authorId)
 try {
     const posts = await prisma.post.findMany({
