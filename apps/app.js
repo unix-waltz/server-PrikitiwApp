@@ -8,7 +8,7 @@ const app = express()
 app.use(
     cors({
       credentials: true,
-      origin: "http://127.0.0.1:5173",
+      origin: "https://client-prikitiw-app.vercel.app/",
     })
   );
 app.use(express.json())
