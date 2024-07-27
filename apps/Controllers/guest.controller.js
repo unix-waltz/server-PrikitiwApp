@@ -88,7 +88,58 @@ getCategory:async(req,res)=>{
         return InternalError({res,error})
     }
 },
-Search : () =>{},
+searchPosts: async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = 8;
+    const { keyword } = req.query;
+
+    try {
+        const data = await prisma.post.findMany({
+            where: {
+                OR: [
+                    { title: { contains: keyword, lte: 'insensitive' } },
+                    { body: { contains: keyword, lte: 'insensitive' } }
+                ]
+            },
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+            include: {
+                author: {
+                    select: {
+                        name: true,
+                        username: true
+                    }
+                }
+            }
+        });
+
+        const totalPosts = await prisma.post.count({
+            where: {
+                OR: [
+                    { title: { contains: keyword, lte: 'insensitive' } },
+                    { body: { contains: keyword, lte: 'insensitive' } }
+                ]
+            }
+        });
+
+        const totalPages = Math.ceil(totalPosts / pageSize);
+
+        return response({
+            res,
+            data: {
+                meta: {
+                    page: page > totalPages ? false : true,
+                    totalPosts,
+                    totalPages,
+                    currentPage: page
+                },
+                data: data.length ? data : undefined
+            }
+        });
+    } catch (error) {
+        return InternalError({ res, error });
+    }
+},
 AllPost :async(req,res)=>{
     const page = parseInt(req.query.page) || 1;
     const pageSize = 8;
