@@ -159,6 +159,44 @@ return response({
     }) 
 }
 
-    }
+    },
+    Initial: async (req,res) => {
+        // get cookie
+        const cookie = getcookie(req)
+        try {
+            if(_.isNil(cookie)) return response({res,code:204,message:'Not Authenticate',status:"initialized"})
+            // find cookie in db
+            const foundusr = await prisma.user.findFirst({where:{refreshtoken:cookie}})
+        // check reuse cookie
+        if(!foundusr) return response({res,code:204,message:'Not Authenticate',status:"initialized"})
+        // new jwt
+        const {access_token,refresh_token} = setToken({payload:{
+            id:foundusr.id,
+            email:foundusr.email,
+            username:foundusr.username,
+            role:foundusr.role
+        }})
+        // update user jwt
+        await prisma.user.update({where:{email:foundusr.email},data:{refreshtoken:refresh_token}})
+        // clear cookie 
+        deletecookie(res)
+        // set new cookie
+        setcookie({res,token:refresh_token})
+        // response
+        return response({
+            res,
+            message:'new token',
+            token:access_token
+        })
+        } catch (error) {
+            return response({
+                res,
+                status : 'Internal error!',
+                code : 500,
+                message:`${error}`
+            }) 
+        }
+        
+            }
 }
 export default Controller
