@@ -25,11 +25,10 @@ Create : async (req,res) =>{
      })
      return response({res,data:post})
    } catch (error) {
-    return res.json(error)
     return response({
         res,
         status : 'Internal error!',
-        code : 500,
+        code : 403,
         message:`${error}`
     })
    }
