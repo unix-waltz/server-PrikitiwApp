@@ -17,7 +17,14 @@ app.use(
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), 'public')));
 app.use(cookieParser());
+
+app.use((req, res, next) => {
+    console.log(`Incoming request for ${req.originalUrl}`);
+    next();
+});
+
 app.get('/', (req, res) => res.send('server running'));
 app.use('/api', routes);
+
 const port = process.env.APP_PORT || 4000;
 app.listen(port, () => console.log(`Listen : ${port}`));
