@@ -1,14 +1,14 @@
 const setcookie = ({res,token})=>{
     res.cookie("_token", token, {
         path: "/",
-        sameSite: "Strict",
+        SameSite: "Strict",
         httpOnly: true,
       });
 }
 const deletecookie = (res)=>{
     res.clearCookie("_token", {
         path: "/",
-        sameSite: "Strict",
+        SameSite: "Strict",
         httpOnly: true,
       });
 }
