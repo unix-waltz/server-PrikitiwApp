@@ -10,7 +10,7 @@ Create : async (req,res) =>{
     const thumbnail = req.file ? req.file.filename : null
     // console.log(thumbnail)
     const {title,authorId,body,category} = req.body
-    if(isNil(title)||isNil(authorId)) return response({res,status:"failed!",message:"Tittle & AuthorID must be filled!",code:500})
+    if(isNil(title)||isNil(authorId)) return response({res,status:"failed!",message:"Tittle & AuthorID must be filled!",code:403})
    try {
      const post = await prisma.post.create({
         data:{
@@ -28,7 +28,7 @@ Create : async (req,res) =>{
     return response({
         res,
         status : 'Internal error!',
-        code : 403,
+        code : 500,
         message:`${error}`
     })
    }
