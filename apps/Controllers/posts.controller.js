@@ -25,6 +25,7 @@ Create : async (req,res) =>{
      })
      return response({res,data:post})
    } catch (error) {
+    return res.json(error)
     return response({
         res,
         status : 'Internal error!',
