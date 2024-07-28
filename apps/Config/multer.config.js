@@ -1,10 +1,9 @@
 import multer from "multer";
 import path from "path";
 
-// Definisikan path tujuan dengan menggunakan path.join untuk memastikan path absolut
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, 'public/posts-image/'));
+    cb(null, path.join(process.cwd(), 'public/posts-image/'));
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = "pictures_" + Date.now() + '-' + "PrikitiwApp.jpeg";
