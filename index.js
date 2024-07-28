@@ -3,17 +3,19 @@ import express from "express"
 import routes from "./apps/Routes/root.routes.js"
 import cookieParser from "cookie-parser"
 import cors from "cors"
+import path from "path";
 const app = express()
 
 app.use(
-    cors({
-      credentials: true,
-      // origin: "https://client-prikitiw-app.vercel.app",
-      origin: "http://127.0.0.1:5173",
-    })
-  );
+  cors({
+    credentials: true,
+    // origin: "https://client-prikitiw-app.vercel.app",
+    origin: "http://127.0.0.1:5173",
+  })
+);
 app.use(express.json())
-app.use(express.static('./public'));
+// app.use(express.static('./public'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser())
 app.get('/',(req,res)=> res.send('server running'))
 app.use('/api',routes)
