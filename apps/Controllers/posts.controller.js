@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 const Controller = {
 Create : async (req,res) =>{
     const thumbnail = req.file ? req.file.filename : null
-return res.json(thumbnail)
+    // console.log(thumbnail)
     const {title,authorId,body,category} = req.body
     if(isNil(title)||isNil(authorId)) return response({res,status:"failed!",message:"Tittle & AuthorID must be filled!",code:403})
    try {
@@ -28,7 +28,7 @@ return res.json(thumbnail)
     return response({
         res,
         status : 'Internal error!',
-        code : 403,
+        code : 500,
         message:`${error}`
     })
    }
